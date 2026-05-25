@@ -1,12 +1,13 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
 
 
-class Settings(BaseSettings):
+class Settings:
     app_name: str = "Deep-Focus API"
     app_version: str = "0.1.0"
 
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="DEEP_FOCUS_")
+    def __init__(self) -> None:
+        self.app_name = os.getenv("DEEP_FOCUS_APP_NAME", self.app_name)
+        self.app_version = os.getenv("DEEP_FOCUS_APP_VERSION", self.app_version)
 
 
 settings = Settings()
-
