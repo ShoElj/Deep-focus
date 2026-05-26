@@ -38,6 +38,9 @@ export const DEFAULT_ALLOWED_CATEGORIES = [
 export const DEFAULT_BLOCKED_CATEGORIES = [
   "gaming",
   "supercars",
+  "cars",
+  "racing",
+  "nascar",
   "celebrity drama",
   "entertainment",
   "football highlights",
@@ -45,7 +48,11 @@ export const DEFAULT_BLOCKED_CATEGORIES = [
   "memes",
   "random videos",
   "movie clips",
-  "comedy skits"
+  "comedy skits",
+  "prank",
+  "reaction",
+  "vlog",
+  "challenge"
 ];
 
 export async function classifyPageContext(
