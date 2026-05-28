@@ -2,6 +2,7 @@ import {
   classifyPageContext,
   createClassifiedState,
   createErrorState,
+  getClassificationSettingsSignature,
   saveClassificationState
 } from "./content/backend-client";
 import { isBypassActive } from "./content/bypass";
@@ -13,6 +14,9 @@ const SUPPRESS_OVERLAY_EVENT = "deep-focus:suppress-overlay";
 const BYPASS_SAVED_EVENT = "deep-focus:bypass-saved";
 const FOCUS_MODE_KEY = "focusModeEnabled";
 const TODAY_STATS_KEY = "todayStats";
+const ALLOWED_CATEGORIES_KEY = "allowedCategories";
+const BLOCKED_CATEGORIES_KEY = "blockedCategories";
+const CATEGORIES_UPDATED_AT_KEY = "categoriesUpdatedAt";
 let lastLoggedContext = "";
 let lastClassifiedContext = "";
 let lastObservedUrl = location.href;
@@ -37,11 +41,18 @@ async function processPageContextIfChanged(): Promise<void> {
   lastLoggedContext = serializedContext;
   console.info("[Deep-Focus] Page context:", context);
 
-  if (serializedContext === lastClassifiedContext) {
+  const classificationSettingsSignature =
+    await getClassificationSettingsSignature();
+  const classificationCacheKey = JSON.stringify({
+    context,
+    classificationSettingsSignature
+  });
+
+  if (classificationCacheKey === lastClassifiedContext) {
     return;
   }
 
-  lastClassifiedContext = serializedContext;
+  lastClassifiedContext = classificationCacheKey;
 
   try {
     const classification = await classifyPageContext(context);
@@ -124,7 +135,25 @@ function watchHistoryNavigation(): void {
     removeBlockOverlay();
   });
   chrome.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName !== "local" || !changes[FOCUS_MODE_KEY]) {
+    if (areaName !== "local") {
+      return;
+    }
+
+    const categoriesChanged = Boolean(
+      changes[ALLOWED_CATEGORIES_KEY] ||
+        changes[BLOCKED_CATEGORIES_KEY] ||
+        changes[CATEGORIES_UPDATED_AT_KEY]
+    );
+
+    if (categoriesChanged) {
+      lastLoggedContext = "";
+      lastClassifiedContext = "";
+      removeBlockOverlay();
+      console.info("[Deep-Focus] Categories updated. Rechecking page.");
+      schedulePageContextChecks();
+    }
+
+    if (!changes[FOCUS_MODE_KEY]) {
       return;
     }
 

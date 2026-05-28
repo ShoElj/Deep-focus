@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.classifier import classify_page
 from app.api.routes import router as api_router
+from app.classifier_service import classify_page
 from app.core.config import settings
 from app.schemas import ClassifyRequest, ClassifyResponse
 

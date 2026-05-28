@@ -10,7 +10,7 @@ DEFAULT_ALLOWED_KEYWORDS = {
     "ai": ["artificial intelligence", "ai learning", "llm", "openai"],
     "ai learning": ["artificial intelligence", "ai learning", "llm", "openai"],
     "artificial intelligence": ["artificial intelligence", "ai learning", "llm", "openai"],
-    "coding": ["coding", "code", "developer", "programming"],
+    "coding": ["coding", "learn to code", "developer tutorial", "programming"],
     "javascript": ["javascript", "typescript", "node", "npm"],
     "machine learning": ["machine learning", "deep learning", "ml model", "transformer"],
     "product strategy": ["product strategy", "product roadmap", "startup growth"],
@@ -93,11 +93,12 @@ def classify_page(request: ClassifyRequest) -> ClassifyResponse:
 
     main_text = _build_main_text(request)
     support_text = _build_support_text(request)
+    use_default_categories = not bool(request.categoriesUpdatedAt)
     allowed_labels = _labels_for_request(
-        request.allowedCategories, DEFAULT_ALLOWED_KEYWORDS
+        request.allowedCategories, DEFAULT_ALLOWED_KEYWORDS, use_default_categories
     )
     blocked_labels = _labels_for_request(
-        request.blockedCategories, DEFAULT_BLOCKED_KEYWORDS
+        request.blockedCategories, DEFAULT_BLOCKED_KEYWORDS, use_default_categories
     )
 
     allowed_score = _score_labels(
@@ -184,7 +185,6 @@ def _build_main_text(request: ClassifyRequest) -> str:
                 request.youtubeTitle,
                 request.title,
                 request.metaDescription,
-                request.channelName,
             ]
         )
     )
@@ -194,6 +194,7 @@ def _build_support_text(request: ClassifyRequest) -> str:
     parts = [
         request.url,
         request.source,
+        request.channelName,
         request.textSample,
         " ".join(request.headings),
     ]
@@ -206,11 +207,13 @@ def _normalize_text(text: str) -> str:
 
 
 def _labels_for_request(
-    requested_categories: list[str], default_keywords: dict[str, list[str]]
+    requested_categories: list[str],
+    default_keywords: dict[str, list[str]],
+    use_defaults: bool,
 ) -> list[str]:
     labels = [category.strip().lower() for category in requested_categories if category]
 
-    if labels:
+    if labels or not use_defaults:
         return labels
 
     return list(default_keywords.keys())

@@ -19,6 +19,7 @@ export interface ClassificationState {
 const CLASSIFY_ENDPOINT = "http://127.0.0.1:8000/classify";
 const ALLOWED_CATEGORIES_KEY = "allowedCategories";
 const BLOCKED_CATEGORIES_KEY = "blockedCategories";
+const CATEGORIES_UPDATED_AT_KEY = "categoriesUpdatedAt";
 
 export const DEFAULT_ALLOWED_CATEGORIES = [
   "coding",
@@ -58,7 +59,8 @@ export const DEFAULT_BLOCKED_CATEGORIES = [
 export async function classifyPageContext(
   context: PageContext
 ): Promise<ClassificationResponse> {
-  const { allowedCategories, blockedCategories } = await getStoredCategories();
+  const { allowedCategories, blockedCategories, categoriesUpdatedAt } =
+    await getStoredCategories();
   const response = await fetch(CLASSIFY_ENDPOINT, {
     method: "POST",
     headers: {
@@ -74,7 +76,8 @@ export async function classifyPageContext(
       channelName: context.youtubeChannelName ?? "",
       source: context.source,
       allowedCategories,
-      blockedCategories
+      blockedCategories,
+      categoriesUpdatedAt
     })
   });
 
@@ -88,10 +91,12 @@ export async function classifyPageContext(
 async function getStoredCategories(): Promise<{
   allowedCategories: string[];
   blockedCategories: string[];
+  categoriesUpdatedAt: string;
 }> {
   const result = await chrome.storage.local.get([
     ALLOWED_CATEGORIES_KEY,
-    BLOCKED_CATEGORIES_KEY
+    BLOCKED_CATEGORIES_KEY,
+    CATEGORIES_UPDATED_AT_KEY
   ]);
 
   return {
@@ -102,8 +107,20 @@ async function getStoredCategories(): Promise<{
     blockedCategories: normalizeCategories(
       result[BLOCKED_CATEGORIES_KEY],
       DEFAULT_BLOCKED_CATEGORIES
-    )
+    ),
+    categoriesUpdatedAt: String(result[CATEGORIES_UPDATED_AT_KEY] ?? "")
   };
+}
+
+export async function getClassificationSettingsSignature(): Promise<string> {
+  const { allowedCategories, blockedCategories, categoriesUpdatedAt } =
+    await getStoredCategories();
+
+  return JSON.stringify({
+    allowedCategories,
+    blockedCategories,
+    categoriesUpdatedAt
+  });
 }
 
 function normalizeCategories(value: unknown, fallback: string[]): string[] {
@@ -115,7 +132,7 @@ function normalizeCategories(value: unknown, fallback: string[]): string[] {
     .map((category) => String(category).trim())
     .filter(Boolean);
 
-  return categories.length > 0 ? Array.from(new Set(categories)) : fallback;
+  return Array.from(new Set(categories));
 }
 
 export function saveClassificationState(state: ClassificationState): void {

@@ -130,11 +130,11 @@ export function Dashboard() {
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
-      <div className="mx-auto max-w-6xl px-5 py-6">
-        <header className="flex flex-wrap items-start justify-between gap-4 border-b border-neutral-800 pb-5">
+      <div className="mx-auto max-w-7xl px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
+        <header className="flex flex-wrap items-start justify-between gap-6 border-b border-neutral-800 pb-8">
           <div>
-            <h1 className="text-2xl font-semibold">Deep-Focus Dashboard</h1>
-            <p className="mt-1 text-sm text-neutral-400">
+            <h1 className="text-3xl font-semibold">Deep-Focus Dashboard</h1>
+            <p className="mt-2 max-w-2xl text-base text-neutral-400">
               Local settings for focus categories, bypass rules, and usage history.
             </p>
           </div>
@@ -143,16 +143,16 @@ export function Dashboard() {
           </Badge>
         </header>
 
-        <div className="mt-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="mt-8 grid gap-6 xl:grid-cols-[1.45fr_0.55fr]">
           <Section title="Overview">
-            <div className="grid gap-3 sm:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <Metric label="Allowed Today" value={todayStats.allowed} tone="green" />
               <Metric label="Blocked Today" value={todayStats.blocked} tone="red" />
               <Metric label="Bypasses Today" value={todayStats.bypassesUsed} tone="blue" />
               <Metric label="Bypass Rule" value={`${bypassDuration} min`} tone="neutral" />
             </div>
-            <div className="mt-4 rounded-md border border-neutral-800 bg-neutral-950 p-3">
-              <p className="text-sm text-neutral-300">
+            <div className="mt-5 rounded-lg border border-neutral-800 bg-neutral-950 p-5">
+              <p className="text-base leading-7 text-neutral-300">
                 Free bypass requires 50 words and 15 unique words. Pro teaser:
                 15 focused words.
               </p>
@@ -160,12 +160,12 @@ export function Dashboard() {
           </Section>
 
           <Section title="Upgrade / Pro">
-            <div className="space-y-2 text-sm text-neutral-300">
+            <div className="space-y-3 text-base leading-7 text-neutral-300">
               <p>Free: 50-word bypass</p>
               <p>Pro: 15-word bypass, advanced schedules, better analytics</p>
             </div>
             <button
-              className="mt-4 rounded-md border border-blue-500 bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
+              className="mt-6 rounded-md border border-blue-500 bg-blue-600 px-5 py-3 text-sm font-semibold text-white"
               type="button"
               onClick={() => chrome.tabs.create({ url: UPGRADE_URL })}
             >
@@ -174,7 +174,7 @@ export function Dashboard() {
           </Section>
         </div>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <CategoryEditor
             title="Allowed Categories"
             categories={allowedCategories}
@@ -200,18 +200,18 @@ export function Dashboard() {
           />
         </div>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-[0.7fr_1.3fr]">
+        <div className="mt-6 grid gap-6 xl:grid-cols-[0.75fr_1.25fr]">
           <Section title="Bypass Rules">
-            <div className="space-y-2 text-sm text-neutral-300">
+            <div className="space-y-3 text-base leading-7 text-neutral-300">
               <p>Free plan requires 50 words.</p>
               <p>At least 15 unique words.</p>
               <p>Pro teaser: 15 focused words.</p>
             </div>
-            <label className="mt-4 block text-xs font-semibold uppercase text-neutral-500">
+            <label className="mt-6 block text-xs font-semibold uppercase text-neutral-500">
               Bypass duration in minutes
             </label>
             <input
-              className="mt-2 w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-neutral-100 outline-none focus:border-blue-500"
+              className="mt-3 w-full rounded-md border border-neutral-700 bg-neutral-950 px-4 py-3 text-base text-neutral-100 outline-none focus:border-blue-500"
               min={1}
               type="number"
               value={bypassDuration}
@@ -223,7 +223,7 @@ export function Dashboard() {
             title="Bypass History"
             action={
               <button
-                className="rounded-md border border-red-500/60 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-300"
+                className="rounded-md border border-red-500/60 bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-300"
                 type="button"
                 onClick={() => void handleClearBypassHistory()}
               >
@@ -232,30 +232,30 @@ export function Dashboard() {
             }
           >
             {bypassHistory.length === 0 ? (
-              <p className="text-sm text-neutral-500">No bypass history yet.</p>
+              <p className="text-base text-neutral-500">No bypass history yet.</p>
             ) : (
-              <div className="max-h-[460px] space-y-3 overflow-auto pr-1">
+              <div className="max-h-[520px] space-y-4 overflow-auto pr-1">
                 {bypassHistory.map((entry) => (
                   <article
-                    className="rounded-md border border-neutral-800 bg-neutral-950 p-3"
+                    className="rounded-lg border border-neutral-800 bg-neutral-950 p-5"
                     key={`${entry.url}-${entry.createdAt}`}
                   >
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <h3 className="max-w-xl text-sm font-semibold text-neutral-100">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <h3 className="max-w-2xl text-base font-semibold text-neutral-100">
                         {entry.title || "Untitled page"}
                       </h3>
                       <Badge tone="red">{entry.detectedCategory}</Badge>
                     </div>
                     <a
-                      className="mt-1 block break-all text-xs text-blue-300"
+                      className="mt-2 block break-all text-sm text-blue-300"
                       href={entry.url}
                       rel="noreferrer"
                       target="_blank"
                     >
                       {entry.url}
                     </a>
-                    <p className="mt-2 text-sm text-neutral-300">{entry.reason}</p>
-                    <dl className="mt-3 grid gap-2 text-xs text-neutral-500 sm:grid-cols-2">
+                    <p className="mt-3 text-sm leading-6 text-neutral-300">{entry.reason}</p>
+                    <dl className="mt-4 grid gap-3 text-xs text-neutral-500 sm:grid-cols-2">
                       <div>
                         <dt>Created</dt>
                         <dd>{formatDate(entry.createdAt)}</dd>
@@ -286,9 +286,9 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold">{title}</h2>
+    <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-6 shadow-sm shadow-black/20">
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <h2 className="text-lg font-semibold">{title}</h2>
         {action}
       </div>
       {children}
@@ -313,9 +313,9 @@ function Metric({
   }[tone];
 
   return (
-    <div className="rounded-md border border-neutral-800 bg-neutral-950 p-3">
-      <p className={`text-xl font-semibold ${toneClass}`}>{value}</p>
-      <p className="mt-1 text-xs text-neutral-500">{label}</p>
+    <div className="rounded-lg border border-neutral-800 bg-neutral-950 p-5">
+      <p className={`text-2xl font-semibold ${toneClass}`}>{value}</p>
+      <p className="mt-2 text-sm text-neutral-500">{label}</p>
     </div>
   );
 }
@@ -346,7 +346,7 @@ function CategoryEditor({
       title={title}
       action={
         <button
-          className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm font-semibold text-neutral-300"
+          className="rounded-md border border-neutral-700 bg-neutral-950 px-4 py-2.5 text-sm font-semibold text-neutral-300"
           type="button"
           onClick={onReset}
         >
@@ -354,9 +354,9 @@ function CategoryEditor({
         </button>
       }
     >
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-3 sm:flex-row">
         <input
-          className="min-w-0 flex-1 rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-neutral-100 outline-none focus:border-blue-500"
+          className="min-w-0 flex-1 rounded-md border border-neutral-700 bg-neutral-950 px-4 py-3 text-base text-neutral-100 outline-none focus:border-blue-500"
           placeholder="Add category"
           type="text"
           value={inputValue}
@@ -368,7 +368,7 @@ function CategoryEditor({
           }}
         />
         <button
-          className="rounded-md border border-blue-500 bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
+          className="rounded-md border border-blue-500 bg-blue-600 px-5 py-3 text-sm font-semibold text-white"
           type="button"
           onClick={onAdd}
         >
@@ -376,10 +376,10 @@ function CategoryEditor({
         </button>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-5 flex flex-wrap gap-3">
         {categories.map((category) => (
           <button
-            className={`rounded-full border px-3 py-1 text-sm ${
+            className={`rounded-full border px-4 py-2 text-sm ${
               tone === "green"
                 ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
                 : "border-red-500/30 bg-red-500/10 text-red-200"
@@ -394,7 +394,7 @@ function CategoryEditor({
         ))}
       </div>
 
-      <p className="mt-3 text-xs text-neutral-500">
+      <p className="mt-5 text-sm leading-6 text-neutral-500">
         Defaults: {defaults.join(", ")}
       </p>
     </Section>
@@ -415,7 +415,7 @@ function Badge({
   }[tone];
 
   return (
-    <span className={`rounded-full border px-2 py-1 text-xs font-semibold ${toneClass}`}>
+    <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${toneClass}`}>
       {children}
     </span>
   );
@@ -424,4 +424,3 @@ function Badge({
 function formatDate(value: string): string {
   return new Date(value).toLocaleString();
 }
-

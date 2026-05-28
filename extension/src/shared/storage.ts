@@ -20,6 +20,7 @@ export const STORAGE_KEYS = {
   activeBypasses: "activeBypasses",
   allowedCategories: "allowedCategories",
   blockedCategories: "blockedCategories",
+  categoriesUpdatedAt: "categoriesUpdatedAt",
   bypassDurationMinutes: "bypassDurationMinutes",
   bypassHistory: "bypassHistory",
   focusModeEnabled: "focusModeEnabled",
@@ -117,7 +118,8 @@ export async function getAllowedCategories(): Promise<string[]> {
 
 export async function setAllowedCategories(categories: string[]): Promise<void> {
   await chrome.storage.local.set({
-    [STORAGE_KEYS.allowedCategories]: normalizeCategories(categories, [])
+    [STORAGE_KEYS.allowedCategories]: normalizeCategories(categories, []),
+    [STORAGE_KEYS.categoriesUpdatedAt]: new Date().toISOString()
   });
 }
 
@@ -137,7 +139,8 @@ export async function getBlockedCategories(): Promise<string[]> {
 
 export async function setBlockedCategories(categories: string[]): Promise<void> {
   await chrome.storage.local.set({
-    [STORAGE_KEYS.blockedCategories]: normalizeCategories(categories, [])
+    [STORAGE_KEYS.blockedCategories]: normalizeCategories(categories, []),
+    [STORAGE_KEYS.categoriesUpdatedAt]: new Date().toISOString()
   });
 }
 

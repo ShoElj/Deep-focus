@@ -14,6 +14,7 @@ class ClassifyRequest(BaseModel):
     source: str = "web"
     allowedCategories: list[str] = Field(default_factory=list)
     blockedCategories: list[str] = Field(default_factory=list)
+    categoriesUpdatedAt: str = ""
 
 
 class ClassifyResponse(BaseModel):
@@ -21,4 +22,3 @@ class ClassifyResponse(BaseModel):
     topLabel: str
     score: float
     reason: str
-
